@@ -38,8 +38,7 @@ def get_train_data(vocabulary, batch_size, num_steps):
     # 随机一个起始位置
     start_idx = random.randint(0, 16)
     while True:
-        # 因为训练中要使用的是字和label(下一个字)的index，
-        # 但这里没有dictionary，无法得到index
+        # 因为训练中要使用的是字和label(下一个字)的index，但这里没有dictionary，无法得到index
         # 所以将每个time step返回的训练数据长度是num_steps+1
         #     其中前num_steps个字用于训练(训练时转化为index)
         #     从第2个字起的num_steps个字用于训练的label(训练时转化为index)
@@ -49,8 +48,6 @@ def get_train_data(vocabulary, batch_size, num_steps):
         yield word_x[:, start_idx: start_idx + num_steps + 1]
         start_idx += num_steps
     ##################################################
-
-
 
 
 def build_dataset(words, n_words):
