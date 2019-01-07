@@ -3,6 +3,7 @@
 
 import collections
 import random
+
 import numpy as np
 
 
@@ -27,34 +28,26 @@ def index_data(sentences, dictionary):
 
 
 def get_train_data(vocabulary, batch_size, num_steps):
-    ##################
-    # Your Code here
-    # vocabulary=[vocabulary[i:i+num_steps] for i in range(len(vocabulary)-num_steps+1)]
-    # x=vocabulary[:-1]
-    # y=vocabulary[1:]
-    # dy=len(x)%batch_size
-    # if dy!=0 :
-    #     x = np.reshape(x[:-dy], [-1, batch_size, num_steps])
-    #     y = np.reshape(y[:-dy], [-1, batch_size, num_steps])
-    # else:
-    #     x = np.reshape(x, [-1, batch_size, num_steps])
-    #     y = np.reshape(y, [-1, batch_size, num_steps])
-    #
-    # return zip(x,y)
-    ##################
-    raw_x = vocabulary[:-1]
-    raw_y = vocabulary[1:]
-    data_partition_size = len(raw_x) // batch_size
-    data_x = np.zeros([batch_size, data_partition_size], dtype=np.int32)
-    data_y = np.zeros([batch_size, data_partition_size], dtype=np.int32)
-    for i in range(batch_size):
-        data_x[i] = raw_x[data_partition_size * i:data_partition_size * (i + 1)]
-        data_y[i] = raw_y[data_partition_size * i:data_partition_size * (i + 1)]
-    epoch_size = data_partition_size // num_steps
-    for i in range(epoch_size):
-        x = data_x[:, i * num_steps:(i + 1) * num_steps]
-        y = data_y[:, i * num_steps:(i + 1) * num_steps]
-        yield (x, y)
+    ################# My code here ###################
+    # 有时不能整除，需要截掉一些字
+    data_partition_size = len(vocabulary) // batch_size
+    word_valid_count = batch_size * data_partition_size
+    vocabulary_valid = np.array(vocabulary[: word_valid_count])
+    word_x = vocabulary_valid.reshape([batch_size, data_partition_size])
+
+    # 随机一个起始位置
+    start_idx = random.randint(0, 16)
+    while True:
+        # 因为训练中要使用的是字和label(下一个字)的index，但这里没有dictionary，无法得到index
+        # 所以将每个time step返回的训练数据长度是num_steps+1
+        #     其中前num_steps个字用于训练(训练时转化为index)
+        #     从第2个字起的num_steps个字用于训练的label(训练时转化为index)
+        if start_idx + num_steps + 1 > word_valid_count:
+            break
+
+        yield word_x[:, start_idx: start_idx + num_steps + 1]
+        start_idx += num_steps
+    ##################################################
 
 
 def build_dataset(words, n_words):

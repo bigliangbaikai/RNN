@@ -54,7 +54,6 @@ with tf.Session() as sess:
         # feed title
         for head in title:
             input = utils.index_data(np.array([[head]]), dictionary)
-            # print("input shape",np.shape(input))
 
             feed_dict = {model.X: input,
                          model.state_tensor: state,
@@ -63,23 +62,21 @@ with tf.Session() as sess:
             pred, state = sess.run(
                 [model.predictions, model.outputs_state_tensor], feed_dict=feed_dict)
 
-        # print("pred",np.shape(pred))
         sentence = title
-        word_index = pred[0,0].argsort()[-1]
-        # print("word_index",word_index)
+        word_index = pred[0][0].argsort()[-1]
 
         # generate sample
         for i in range(64):
             feed_dict = {model.X: [[word_index]],
                          model.state_tensor: state,
                          model.keep_prob: 1.0}
-            print("shape",np.shape([[word_index]]))
 
             pred, state = sess.run(
                 [model.predictions, model.outputs_state_tensor], feed_dict=feed_dict)
 
-            word_index = pred[0,0].argsort()[-1]
+            word_index = pred[0][0].argsort()[-1]
             word = np.take(reverse_list, word_index)
+
             sentence = sentence + word
 
         logging.debug('==============[{0}]=============='.format(title))
