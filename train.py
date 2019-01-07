@@ -15,7 +15,7 @@ import numpy as np
 from flags import parse_args
 FLAGS, unparsed = parse_args()
 
-json_data="data.json"
+json_data= "data.json"
 logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s', level=logging.DEBUG)
 
